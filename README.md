@@ -52,7 +52,7 @@ To build the plugin from source:
 1. **Adding Links (Admin):**
    - Log into your Jellyfin server as an administrator.
    - Go to the **Admin Dashboard** -> **Plugins** -> **TeslaFullscreen**.
-   - Enter a descriptive Name (e.g. `Jellyfin` or `Home Assistant`) and the Target URL (e.g. `157.211.157.120:8096`).
+   - Enter a descriptive Name (e.g. `Jellyfin` or `Home Assistant`) and the Target URL (e.g. `127.0.0.1`).
    - Click **Add Link**. The link will be saved server-side.
 
 2. **Accessing and Launching Links (All Users):**
