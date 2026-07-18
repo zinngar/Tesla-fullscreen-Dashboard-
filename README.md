@@ -88,6 +88,35 @@ To fix this, you must set the correct permissions:
 
 ---
 
+---
+
+## How to Run in Docker (Quick & Easy)
+
+If you want to run Jellyfin in a Docker container with this plugin pre-installed and configured, we have provided a standard `Dockerfile` and `docker-compose.yml` configuration.
+
+### Run with Docker Compose (Recommended)
+
+1. **Start the Container:**
+   From the root of the repository, simply run:
+   ```bash
+   docker compose up -d --build
+   ```
+   This will:
+   - Compile the plugin using the `.NET 8.0 SDK`.
+   - Package it into a lightweight, official `jellyfin/jellyfin:10.9.11` base image.
+   - Automatically configure persistence volumes (`jellyfin-config` and `jellyfin-cache`) in the current directory.
+   - Start the server on port **`8097`** (non-default port chosen to avoid port conflicts with any existing Jellyfin instance running on `8096`).
+
+2. **Access Jellyfin:**
+   Open your browser and navigate to:
+   ```text
+   http://localhost:8097
+   ```
+
+### Technical Details (Under the Hood)
+- **Automatic Volume Mapping Handling:** When mounting volumes to `/config`, files copied to the volume during the docker build are typically shadowed/hidden. To solve this, our setup copies the compiled plugin from a staging directory into the `/config/plugins/` directory *on startup* via a custom `entrypoint.sh` script.
+- **Auto Permission Fixes:** The startup script automatically applies proper file permissions (`chmod 644`) to the plugin assembly DLL so that Jellyfin can load the plugin without crashes or authorization issues.
+
 ## Troubleshooting & Common Server Crashes
 
 If your Jellyfin server crashes or fails to start after installing, look at your Jellyfin logs. The most common errors on Docker/CasaOS are:

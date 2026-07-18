@@ -1,0 +1,12 @@
+services:
+  jellyfin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jellyfin_teslafullscreen
+    ports:
+      - "8097:8096" # Host port 8097 mapped to container port 8096 to avoid conflict with default Jellyfin (8096)
+    volumes:
+      - ./jellyfin-config:/config
+      - ./jellyfin-cache:/cache
+    restart: unless-stopped
