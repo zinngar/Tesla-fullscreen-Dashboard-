@@ -88,6 +88,38 @@ To fix this, you must set the correct permissions:
 
 ---
 
+## Troubleshooting & Common Server Crashes
+
+If your Jellyfin server crashes or fails to start after installing, look at your Jellyfin logs. The most common errors on Docker/CasaOS are:
+
+### 1. Fatals caused by `meta.json` permission denied:
+**Error in Log:**
+```text
+[FTL] Main: Error while starting server
+System.UnauthorizedAccessException: Access to the path '/config/data/plugins/TeslaFullscreen/meta.json' is denied.
+---> System.IO.IOException: Permission denied
+```
+* **Why this happens:** Jellyfin tries to write a status file (`meta.json`) inside the folder containing your plugin. If you uploaded the folder as `root` or another user, the Jellyfin container user (UID 1000) does not have permission to write files to that directory, causing a fatal startup crash.
+* **The Fix:** Grant read/write permissions to the `plugins/TeslaFullscreen` directory by running this in your server terminal:
+  ```bash
+  # Change ownership of the folder to Jellyfin (UID 1000 is standard)
+  sudo chown -R 1000:1000 /DATA/AppData/jellyfin/plugins/TeslaFullscreen/
+
+  # Ensure the directory itself is writable by Jellyfin
+  sudo chmod 755 /DATA/AppData/jellyfin/plugins/TeslaFullscreen/
+  ```
+
+### 2. Error loading multiple DLLs (Assembly already loaded):
+**Error in Log:**
+```text
+[ERR] Failed to load assembly "/config/data/plugins/.../TeslaFullscreen.dll". Disabling plugin
+System.IO.FileLoadException: Could not load file or assembly 'TeslaFullscreen...'. Assembly with same name is already loaded
+```
+* **Why this happens:** You copied the **entire source code repository folder** (containing the `obj` and `bin` build folders) directly into your `plugins` directory instead of copying **only** the `TeslaFullscreen.dll` file. Jellyfin scans all subfolders recursively and tries to load the `.dll` multiple times.
+* **The Fix:** Delete the entire source repository folder from your `plugins` directory. Make sure you only have a single clean folder named `/plugins/TeslaFullscreen/` containing only the `TeslaFullscreen.dll` (and optionally `TeslaFullscreen.pdb`) file!
+
+---
+
 ## Common Paths
 
 Depending on your installation type, the standard paths to the `plugins` directory are:
