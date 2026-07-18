@@ -14,6 +14,7 @@ namespace TeslaFullscreen.Controller;
 [ApiController]
 [Route("TeslaFullscreen")]
 [Authorize]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class TeslaFullscreenController : ControllerBase
 {
     /// <summary>
