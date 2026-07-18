@@ -35,7 +35,7 @@ To build the plugin from source:
    ```bash
    dotnet build
    ```
-3. The compiled binary (`TeslaFullscreen.dll`) will be available in the `TeslaFullscreen/bin/Debug/net9.0/` folder.
+3. The compiled binary (`TeslaFullscreen.dll`) will be available in the `TeslaFullscreen/bin/Debug/net8.0/` folder.
 
 ## How to Install
 
