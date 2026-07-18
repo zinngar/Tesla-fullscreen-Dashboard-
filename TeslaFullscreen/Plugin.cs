@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Jellyfin.Plugin.Template.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
+using TeslaFullscreen.Configuration;
 
-namespace Jellyfin.Plugin.Template;
+namespace TeslaFullscreen;
 
 /// <summary>
 /// The main plugin.
@@ -26,7 +26,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     }
 
     /// <inheritdoc />
-    public override string Name => "Template";
+    public override string Name => "TeslaFullscreen";
 
     /// <inheritdoc />
     public override Guid Id => Guid.Parse("eb5d7894-8eef-4b36-aa6f-5d124e828ce1");
@@ -45,6 +45,14 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
             {
                 Name = Name,
                 EmbeddedResourcePath = string.Format(CultureInfo.InvariantCulture, "{0}.Configuration.configPage.html", GetType().Namespace)
+            },
+            new PluginPageInfo
+            {
+                Name = "TeslaLinks",
+                DisplayName = "Tesla Links",
+                EmbeddedResourcePath = string.Format(CultureInfo.InvariantCulture, "{0}.Configuration.teslaLinksPage.html", GetType().Namespace),
+                EnableInMainMenu = true,
+                MenuIcon = "tablet"
             }
         ];
     }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>Jellyfin.Plugin.Template</RootNamespace>
+    <RootNamespace>TeslaFullscreen</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
@@ -26,8 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Configuration\configPage.html" />
-    <EmbeddedResource Include="Configuration\configPage.html" />
+    <None Remove="Configuration/configPage.html" />
+    <EmbeddedResource Include="Configuration/configPage.html" />
+    <None Remove="Configuration/teslaLinksPage.html" />
+    <EmbeddedResource Include="Configuration/teslaLinksPage.html" />
   </ItemGroup>
 
 </Project>

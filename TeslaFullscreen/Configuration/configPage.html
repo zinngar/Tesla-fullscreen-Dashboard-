@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TeslaFullscreen Configuration</title>
+</head>
+<body>
+    <div id="TeslaFullscreenConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button">
+        <div data-role="content">
+            <div class="content-primary">
+                <div class="verticalSection">
+                    <div class="sectionTitleContainer flex align-items-center">
+                        <h2 class="sectionTitle">Tesla Fullscreen Link Manager</h2>
+                    </div>
+                    <p style="margin: 1em 0; color: #b0b0b0;">
+                        Manage the links that will be displayed on the <strong>Tesla Links</strong> tab for all users. Clicking "Launch" or opening them on the Tesla browser will load them in fullscreen using the YouTube redirect exploit.
+                    </p>
+
+                    <!-- Form to Add a New Link -->
+                    <form id="AddLinkForm" style="margin-top: 2em; margin-bottom: 3em;">
+                        <div class="inputContainer">
+                            <label class="inputLabel inputLabelUnfocused" for="NewLinkName">Link Name</label>
+                            <input id="NewLinkName" name="NewLinkName" type="text" is="emby-input" required placeholder="e.g., Jellyfin" />
+                            <div class="fieldDescription">The name/label displayed to users.</div>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputLabel inputLabelUnfocused" for="NewLinkUrl">Target URL</label>
+                            <input id="NewLinkUrl" name="NewLinkUrl" type="text" is="emby-input" required placeholder="e.g., 157.211.157.120:8096" />
+                            <div class="fieldDescription">The destination URL. Port number can be included. Protocol (http://) is optional.</div>
+                        </div>
+                        <div>
+                            <button is="emby-button" type="submit" class="raised button-submit block emby-button" style="margin: 1.5em 0 0 0;">
+                                <span>Add Link</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- List of Existing Links -->
+                    <h3 class="sectionTitle" style="margin-top: 2em;">Existing Links</h3>
+                    <div id="AdminLinksContainer" class="paperList" style="margin-top: 1em; display: none;">
+                        <!-- Dynamic list of links will be rendered here -->
+                    </div>
+                    <div id="AdminNoLinksMessage" style="margin-top: 1em; text-align: center; color: #b0b0b0; display: none;">
+                        <p>No links added yet. Use the form above to add your first link!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var TeslaFullscreenConfig = {
+                loadLinks: function() {
+                    Dashboard.showLoadingMsg();
+                    var url = ApiClient.getUrl('TeslaFullscreen/Links');
+                    ApiClient.getJSON(url).then(function(links) {
+                        var container = document.querySelector('#AdminLinksContainer');
+                        var noLinks = document.querySelector('#AdminNoLinksMessage');
+
+                        container.innerHTML = '';
+                        if (!links || links.length === 0) {
+                            container.style.display = 'none';
+                            noLinks.style.display = 'block';
+                        } else {
+                            noLinks.style.display = 'none';
+                            container.style.display = 'block';
+
+                            links.forEach(function(link) {
+                                var item = document.createElement('div');
+                                item.className = 'listItem listItem-border flex align-items-center justify-content-between';
+                                item.style.padding = '1em';
+
+                                var info = document.createElement('div');
+                                info.className = 'listItemBody';
+                                info.style.flexGrow = '1';
+
+                                var name = document.createElement('h3');
+                                name.className = 'listItemBodyText';
+                                name.textContent = link.Name;
+                                name.style.margin = '0 0 0.2em 0';
+
+                                var address = document.createElement('div');
+                                address.className = 'listItemBodyText secondary';
+                                address.textContent = link.Url;
+                                address.style.fontSize = '0.85em';
+                                address.style.color = '#a0a0a0';
+
+                                info.appendChild(name);
+                                info.appendChild(address);
+
+                                var actions = document.createElement('div');
+                                actions.className = 'flex align-items-center';
+                                actions.style.gap = '0.5em';
+
+                                // Launch Button
+                                var launchBtn = document.createElement('button');
+                                launchBtn.type = 'button';
+                                launchBtn.is = 'emby-button';
+                                launchBtn.className = 'raised button-submit block emby-button';
+                                launchBtn.style.margin = '0';
+                                launchBtn.innerHTML = '<span>Launch</span>';
+                                launchBtn.addEventListener('click', function() {
+                                    var targetUrl = link.Url;
+                                    if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+                                        targetUrl = 'http://' + targetUrl;
+                                    }
+                                    var redirectUrl = 'https://www.youtube.com/redirect?q=' + encodeURIComponent(targetUrl);
+                                    window.open(redirectUrl, '_blank');
+                                });
+
+                                // Delete Button
+                                var deleteBtn = document.createElement('button');
+                                deleteBtn.type = 'button';
+                                deleteBtn.is = 'emby-button';
+                                deleteBtn.className = 'raised button-accent block emby-button';
+                                deleteBtn.style.margin = '0';
+                                deleteBtn.style.backgroundColor = '#cc3333';
+                                deleteBtn.style.color = '#ffffff';
+                                deleteBtn.innerHTML = '<span>Delete</span>';
+                                deleteBtn.addEventListener('click', function() {
+                                    if (confirm('Are you sure you want to delete "' + link.Name + '"?')) {
+                                        Dashboard.showLoadingMsg();
+                                        var deleteUrl = ApiClient.getUrl('TeslaFullscreen/Links', { name: link.Name });
+                                        ApiClient.ajax({
+                                            type: 'DELETE',
+                                            url: deleteUrl
+                                        }).then(function() {
+                                            TeslaFullscreenConfig.loadLinks();
+                                        }).catch(function(err) {
+                                            Dashboard.hideLoadingMsg();
+                                            alert('Failed to delete link.');
+                                            console.error(err);
+                                        });
+                                    }
+                                });
+
+                                actions.appendChild(launchBtn);
+                                actions.appendChild(deleteBtn);
+
+                                item.appendChild(info);
+                                item.appendChild(actions);
+                                container.appendChild(item);
+                            });
+                        }
+                        Dashboard.hideLoadingMsg();
+                    }).catch(function(err) {
+                        Dashboard.hideLoadingMsg();
+                        console.error('Failed to load links:', err);
+                    });
+                }
+            };
+
+            document.querySelector('#TeslaFullscreenConfigPage')
+                .addEventListener('pageshow', function() {
+                    TeslaFullscreenConfig.loadLinks();
+                });
+
+            document.querySelector('#AddLinkForm')
+                .addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Dashboard.showLoadingMsg();
+
+                    var nameInput = document.querySelector('#NewLinkName');
+                    var urlInput = document.querySelector('#NewLinkUrl');
+
+                    var payload = {
+                        Name: nameInput.value,
+                        Url: urlInput.value
+                    };
+
+                    var postUrl = ApiClient.getUrl('TeslaFullscreen/Links');
+                    ApiClient.ajax({
+                        type: 'POST',
+                        url: postUrl,
+                        data: JSON.stringify(payload),
+                        contentType: 'application/json'
+                    }).then(function() {
+                        nameInput.value = '';
+                        urlInput.value = '';
+                        TeslaFullscreenConfig.loadLinks();
+                    }).catch(function(err) {
+                        Dashboard.hideLoadingMsg();
+                        alert('Failed to add link. Please check if a link with this name already exists.');
+                        console.error(err);
+                    });
+
+                    return false;
+                });
+        </script>
+    </div>
+</body>
+</html>
