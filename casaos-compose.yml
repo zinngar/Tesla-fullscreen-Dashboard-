@@ -1,0 +1,34 @@
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: teslafullscreen
+  author: zinngar
+  category: Utility
+  description:
+    en_us: "A standalone web dashboard designed to easily open external web links in full screen on the Tesla web browser using the YouTube redirect exploit."
+  developer: zinngar
+  icon: "https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/car.svg"
+  tagline:
+    en_us: "Tesla browser fullscreen shortcut dashboard"
+  title:
+    en_us: "TeslaFullscreen"
+
+services:
+  teslafullscreen:
+    image: zinngar/teslafullscreen:latest
+    container_name: teslafullscreen_app
+    ports:
+      - "8097:8097"
+    volumes:
+      - /DATA/AppData/teslafullscreen/data:/app/data
+    restart: unless-stopped
+    x-casaos:
+      ports:
+        - container: "8097"
+          description:
+            en_us: "Web Portal Port"
+      volumes:
+        - container: "/app/data"
+          description:
+            en_us: "Persisted links and configurations data"
