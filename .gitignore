@@ -5,4 +5,7 @@ obj/
 artifacts
 __pycache__/
 *.pyc
-data/
+*.pyo
+*.pyd
+.pytest_cache/
+flask_server.log

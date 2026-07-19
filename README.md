@@ -1,29 +1,28 @@
-# TeslaFullscreen Standalone Dashboard
+# Tesla Fullscreen Dashboard
 
-A lightweight standalone web application designed to easily open external web links (like self-hosted services, home automation, or other media sites) in full screen on the Tesla web browser by utilizing the YouTube redirect exploit.
-
-Because the Tesla browser does not natively allow bookmarking links that automatically open in full-screen mode, this application provides a centralized, private dashboard to store and launch your target links. Bookmarking this application's URL on your Tesla browser lets you easily open any designated link in full screen with a single click.
+A lightweight, beautiful, dark-mode web application hosted inside a Docker container designed to easily launch any website in full screen on a Tesla browser with a single click.
 
 ## Features
 
-- **Responsive Dark Mode UI:** Designed to look premium and scale perfectly on both mobile screens and the Tesla center console screen.
-- **Dynamic Link Management:** Easily add or delete links directly from the web dashboard. Links are saved instantly on the server.
-- **YouTube Redirect Exploit:** Automatically formats and launches links using the standard `https://www.youtube.com/redirect?q={TARGET_URL}` exploit to bypass Tesla's full-screen browser restrictions.
-- **Persisted Storage:** Keeps all links saved in a local, human-readable JSON database (`data/links.json`), allowing you to easily backup or edit links manually.
-- **Production-Ready & Lightweight:** Built using Python and Flask, served with Gunicorn, and packaged inside a tiny Alpine Docker image (~50MB total).
+- **No Logins Required:** Designed for quick convenience on phones, tablets, or the Tesla browser itself. Anyone on the local network can manage links.
+- **Modern Dark-Mode Dashboard:** A responsive UI styled with Tailwind CSS, designed specifically to look stunning on the Tesla screen.
+- **Interactive Icon Picker:** Choose from pre-configured emojis (📺 TV, 🏠 Home, 🎮 Games, 🎵 Music, etc.) to give each link card its own unique visual icon.
+- **YouTube Redirect Exploit Support:** Automatically wraps and launches your links using the standard `https://www.youtube.com/redirect?q={TARGET_URL}` exploit, allowing the Tesla browser to run any destination in full screen.
+- **Persistent Storage:** Saves all configured links to a simple JSON file mounted via docker volumes, ensuring data survives restarts.
 
 ---
 
-## How to Run in Docker (Quick Start)
+## Quick Start (with Docker Compose)
 
-### Run with Docker Compose (Recommended)
-
-1. **Start the Container:**
-   From the root of this repository, run:
+1. **Start the App:**
+   From the root of the repository, simply run:
    ```bash
    docker compose up -d --build
    ```
-   This will build the lightweight Alpine image, configure storage persistence in `./data/`, and start the app on port **`8097`**.
+   This will:
+   - Build a lightweight `python:3.12-alpine` container.
+   - Run the Flask web application on port `5000` inside the container.
+   - Automatically expose and map it to port **`8097`** on the host.
 
 2. **Access the Dashboard:**
    Open your browser and navigate to:
@@ -31,53 +30,22 @@ Because the Tesla browser does not natively allow bookmarking links that automat
    http://localhost:8097
    ```
 
-### Run on CasaOS (Custom Install)
-
-We have provided a pre-configured `casaos-compose.yml` for seamless integration with CasaOS.
-
-1. **Import the App Configuration:**
-   - Go to your CasaOS Dashboard.
-   - Click **App Store** -> **Custom Install** (top-right corner).
-   - Click the **Import** button (top-right, showing `Import YAML`).
-   - Copy and paste the contents of `casaos-compose.yml` from this repository, then click **Submit**.
-
-2. **Review and Install:**
-   - The app's name, brand icon, description, and volumes will automatically configure.
-   - The default host port is mapped to **`8097`**.
-   - Your links data is safely persisted in `/DATA/AppData/teslafullscreen/data/`.
-   - Click **Save** to build and run the app.
+3. **Bookmark on Tesla:**
+   Open `http://<YOUR_SERVER_IP>:8097` in your Tesla's browser and bookmark the page for quick, one-click access.
 
 ---
 
-## Local Development (Without Docker)
+## Technical Details
 
-To run the application locally on your host machine:
-
-1. **Install Python 3:**
-   Ensure Python 3 is installed on your system.
-
-2. **Install Dependencies:**
-   ```bash
-   pip install flask gunicorn
-   ```
-
-3. **Run the Server:**
-   ```bash
-   python app.py
-   ```
-   The application will start in development mode at `http://localhost:8097`.
+- **Backend:** Flask (Python 3.12)
+- **Frontend:** HTML5, Tailwind CSS, JavaScript (no external heavy frontend framework required)
+- **Data Store:** `data/links.json` (Local persistent JSON file)
+- **Port Mapping:** Host `8097` maps to Container `5000`
 
 ---
 
 ## Usage Guide
 
-1. **Adding Links:**
-   - Open the application dashboard in your browser.
-   - Go to the **Link Manager** card.
-   - Enter a descriptive Name (e.g., `Home Assistant`) and the target address (e.g., `192.168.1.100:8123` or `http://my-service.local`).
-   - Click **Add Link**. The link will be instantly stored in `data/links.json`.
-
-2. **Launching in Fullscreen on a Tesla:**
-   - Navigate to your deployed dashboard URL (e.g., `http://<your-server-ip>:8097`) inside your Tesla web browser.
-   - Bookmark this dashboard tab inside the Tesla browser so you can access it instantly.
-   - Click **Launch** next to any link. It will launch YouTube, which immediately redirects and opens your target link in glorious, native full screen!
+1. **Add Link:** Use the left sidebar to enter a friendly Name, Target URL, and select a fitting visual icon, then click **Add Link**.
+2. **Launch Fullscreen:** Simply click anywhere on a card. It will automatically load the YouTube redirect exploit, prompting the Tesla browser to transition into fullscreen mode and load your target link.
+3. **Delete Link:** Hover over any card and click the trash can icon in the top right to instantly remove it.
