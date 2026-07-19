@@ -1,0 +1,40 @@
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: jellyfin
+  author: zinngar
+  category: Media
+  description:
+    en_us: "A custom Jellyfin media server with the TeslaFullscreen plugin preloaded. It allows users to easily open external web links in full screen on the Tesla browser by utilizing the YouTube redirect exploit."
+  developer: Jellyfin & zinngar
+  icon: "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/SVG/icon-transparent.svg"
+  tagline:
+    en_us: "Jellyfin with TeslaFullscreen plugin preloaded"
+  title:
+    en_us: "TeslaFullscreen Jellyfin"
+
+services:
+  jellyfin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jellyfin_teslafullscreen
+    ports:
+      - "8097:8096"
+    volumes:
+      - /DATA/AppData/jellyfin-teslafullscreen/config:/config
+      - /DATA/AppData/jellyfin-teslafullscreen/cache:/cache
+    restart: unless-stopped
+    x-casaos:
+      ports:
+        - container: "8096"
+          description:
+            en_us: "Web Portal Port"
+      volumes:
+        - container: "/config"
+          description:
+            en_us: "Jellyfin configuration and database"
+        - container: "/cache"
+          description:
+            en_us: "Jellyfin cache files"

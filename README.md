@@ -113,6 +113,27 @@ If you want to run Jellyfin in a Docker container with this plugin pre-installed
    http://localhost:8097
    ```
 
+### Run on CasaOS (Custom Install)
+
+We have provided a tailored `casaos-compose.yml` that makes installation on CasaOS straightforward using standard AppData directory mapping.
+
+1. **Import the App Configuration:**
+   - Log into your CasaOS Dashboard.
+   - Click **App Store** -> **Custom Install** (at the top-right corner).
+   - In the import window, click the **Import** button (top-right, showing `Import YAML`).
+   - Copy and paste the contents of `casaos-compose.yml` from this repository, then click **Submit**.
+
+2. **Review Settings:**
+   - The app's title, description, and branding icons will automatically populate.
+   - The default host port is set to **`8097`** (preventing conflict with default Jellyfin installations).
+   - The files are mapped to the correct paths on your system:
+     - Config: `/DATA/AppData/jellyfin-teslafullscreen/config`
+     - Cache: `/DATA/AppData/jellyfin-teslafullscreen/cache`
+
+3. **Install and Run:**
+   - Click **Save** to build and launch the container.
+   - Once running, open the **TeslaFullscreen Jellyfin** app on your CasaOS dashboard!
+
 ### Technical Details (Under the Hood)
 - **Automatic Volume Mapping Handling:** When mounting volumes to `/config`, files copied to the volume during the docker build are typically shadowed/hidden. To solve this, our setup copies the compiled plugin from a staging directory into the `/config/plugins/` directory *on startup* via a custom `entrypoint.sh` script.
 - **Auto Permission Fixes:** The startup script automatically applies proper file permissions (`chmod 644`) to the plugin assembly DLL so that Jellyfin can load the plugin without crashes or authorization issues.
