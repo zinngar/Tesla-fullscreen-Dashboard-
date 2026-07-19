@@ -19,13 +19,13 @@ services:
     image: zinngar/teslafullscreen:latest
     container_name: teslafullscreen_app
     ports:
-      - "8097:8097"
+      - "5000:5000"
     volumes:
       - /DATA/AppData/teslafullscreen/data:/app/data
     restart: unless-stopped
     x-casaos:
       ports:
-        - container: "8097"
+        - container: "5000"
           description:
             en_us: "Web Portal Port"
       volumes:

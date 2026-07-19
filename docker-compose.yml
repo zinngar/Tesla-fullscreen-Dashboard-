@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: tesla_fullscreen_app
     ports:
-      - "8097:5000"
+      - "5000:5000"
     volumes:
       - ./data:/app/data
     restart: unless-stopped

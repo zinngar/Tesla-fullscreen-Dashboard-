@@ -22,16 +22,16 @@ A lightweight, beautiful, dark-mode web application hosted inside a Docker conta
    This will:
    - Build a lightweight `python:3.12-alpine` container.
    - Run the Flask web application on port `5000` inside the container.
-   - Automatically expose and map it to port **`8097`** on the host.
+   - Automatically expose and map it to port **`5000`** on the host.
 
 2. **Access the Dashboard:**
    Open your browser and navigate to:
    ```text
-   http://localhost:8097
+   http://localhost:5000
    ```
 
 3. **Bookmark on Tesla:**
-   Open `http://<YOUR_SERVER_IP>:8097` in your Tesla's browser and bookmark the page for quick, one-click access.
+   Open `http://<YOUR_SERVER_IP>:5000` in your Tesla's browser and bookmark the page for quick, one-click access.
 
 ---
 
@@ -40,7 +40,7 @@ A lightweight, beautiful, dark-mode web application hosted inside a Docker conta
 - **Backend:** Flask (Python 3.12)
 - **Frontend:** HTML5, Tailwind CSS, JavaScript (no external heavy frontend framework required)
 - **Data Store:** `data/links.json` (Local persistent JSON file)
-- **Port Mapping:** Host `8097` maps to Container `5000`
+- **Port Mapping:** Host `5000` maps to Container `5000`
 
 ---
 
