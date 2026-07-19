@@ -30,8 +30,60 @@ A lightweight, beautiful, dark-mode web application hosted inside a Docker conta
    http://localhost:8097
    ```
 
-3. **Bookmark on Tesla:**
-   Open `http://<YOUR_SERVER_IP>:8097` in your Tesla's browser and bookmark the page for quick, one-click access.
+### Run on CasaOS (Custom Install)
+
+We have provided a tailored `casaos-compose.yml` that makes installation on CasaOS straightforward using standard AppData directory mapping.
+
+1. **Import the App Configuration:**
+   - Log into your CasaOS Dashboard.
+   - Click **App Store** -> **Custom Install** (at the top-right corner).
+   - In the import window, click the **Import** button (top-right, showing `Import YAML`).
+   - Copy and paste the contents of `casaos-compose.yml` from this repository, then click **Submit**.
+
+2. **Review Settings:**
+   - The app's title, description, and branding icons will automatically populate.
+   - The default host port is set to **`8097`** (preventing conflict with default Jellyfin installations).
+   - The files are mapped to the correct paths on your system:
+     - Config: `/DATA/AppData/jellyfin-teslafullscreen/config`
+     - Cache: `/DATA/AppData/jellyfin-teslafullscreen/cache`
+
+3. **Install and Run:**
+   - Click **Save** to build and launch the container.
+   - Once running, open the **TeslaFullscreen Jellyfin** app on your CasaOS dashboard!
+
+### Technical Details (Under the Hood)
+- **Automatic Volume Mapping Handling:** When mounting volumes to `/config`, files copied to the volume during the docker build are typically shadowed/hidden. To solve this, our setup copies the compiled plugin from a staging directory into the `/config/plugins/` directory *on startup* via a custom `entrypoint.sh` script.
+- **Auto Permission Fixes:** The startup script automatically applies proper file permissions (`chmod 644`) to the plugin assembly DLL so that Jellyfin can load the plugin without crashes or authorization issues.
+
+## Troubleshooting & Common Server Crashes
+
+If your Jellyfin server crashes or fails to start after installing, look at your Jellyfin logs. The most common errors on Docker/CasaOS are:
+
+### 1. Fatals caused by `meta.json` permission denied:
+**Error in Log:**
+```text
+[FTL] Main: Error while starting server
+System.UnauthorizedAccessException: Access to the path '/config/data/plugins/TeslaFullscreen/meta.json' is denied.
+---> System.IO.IOException: Permission denied
+```
+* **Why this happens:** Jellyfin tries to write a status file (`meta.json`) inside the folder containing your plugin. If you uploaded the folder as `root` or another user, the Jellyfin container user (UID 1000) does not have permission to write files to that directory, causing a fatal startup crash.
+* **The Fix:** Grant read/write permissions to the `plugins/TeslaFullscreen` directory by running this in your server terminal:
+  ```bash
+  # Change ownership of the folder to Jellyfin (UID 1000 is standard)
+  sudo chown -R 1000:1000 /DATA/AppData/jellyfin/plugins/TeslaFullscreen/
+
+  # Ensure the directory itself is writable by Jellyfin
+  sudo chmod 755 /DATA/AppData/jellyfin/plugins/TeslaFullscreen/
+  ```
+
+### 2. Error loading multiple DLLs (Assembly already loaded):
+**Error in Log:**
+```text
+[ERR] Failed to load assembly "/config/data/plugins/.../TeslaFullscreen.dll". Disabling plugin
+System.IO.FileLoadException: Could not load file or assembly 'TeslaFullscreen...'. Assembly with same name is already loaded
+```
+* **Why this happens:** You copied the **entire source code repository folder** (containing the `obj` and `bin` build folders) directly into your `plugins` directory instead of copying **only** the `TeslaFullscreen.dll` file. Jellyfin scans all subfolders recursively and tries to load the `.dll` multiple times.
+* **The Fix:** Delete the entire source repository folder from your `plugins` directory. Make sure you only have a single clean folder named `/plugins/TeslaFullscreen/` containing only the `TeslaFullscreen.dll` (and optionally `TeslaFullscreen.pdb`) file!
 
 ---
 
