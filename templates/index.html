@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tesla Fullscreen Link Manager</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-[#0f1115] text-[#e2e8f0] min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-[#1f2937] bg-[#14171c] py-5 px-6 shadow-md">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🚗</span>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white">Tesla Fullscreen Dashboard</h1>
+                    <p class="text-xs text-gray-400">Launch any webpage in fullscreen using the YouTube redirect exploit</p>
+                </div>
+            </div>
+            <div class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center space-x-1.5 font-medium">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
+                <span>Ready for Tesla Browser</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Left Side: Form to Add a Link -->
+        <div class="lg:col-span-1">
+            <div class="bg-[#14171c] border border-[#1f2937] rounded-2xl p-6 shadow-xl sticky top-6">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                    <span>➕</span>
+                    <span>Add New Link</span>
+                </h2>
+
+                <form action="/add" method="POST" class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-300 mb-1.5">Link Name</label>
+                        <input type="text" id="name" name="name" required placeholder="e.g., Jellyfin, Home Assistant"
+                               class="w-full bg-[#1c2026] border border-[#2d3748] rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                    </div>
+
+                    <div>
+                        <label for="url" class="block text-sm font-medium text-gray-300 mb-1.5">Target URL</label>
+                        <input type="text" id="url" name="url" required placeholder="e.g., 192.168.1.100:8123"
+                               class="w-full bg-[#1c2026] border border-[#2d3748] rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                        <p class="text-xs text-gray-500 mt-1">IP or web domain. http:// is added automatically if omitted.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Select Icon</label>
+                        <div class="grid grid-cols-5 gap-2" id="iconSelector">
+                            <!-- Radio icons -->
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="🌐" checked class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🌐</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="📺" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">📺</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="🏠" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🏠</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="🎮" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🎮</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="🎵" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🎵</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="💡" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">💡</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="📽️" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">📽️</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="🧭" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🧭</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="🚗" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🚗</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="icon" value="⚙️" class="peer sr-only">
+                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">⚙️</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-indigo-600/20">
+                        Add Link
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Side: Links Grid -->
+        <div class="lg:col-span-2">
+            <div class="bg-[#14171c] border border-[#1f2937] rounded-2xl p-6 shadow-xl h-full min-h-[400px] flex flex-col">
+                <h2 class="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+                    <span>📱</span>
+                    <span>Tesla Fullscreen Launcher</span>
+                </h2>
+
+                {% if links %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-grow content-start">
+                        {% for link in links %}
+                            <div onclick="launchUrl('{{ link.url }}')"
+                                 class="group relative bg-[#1c2026] hover:bg-[#222830] border border-[#2d3748] hover:border-indigo-500/50 rounded-2xl p-5 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-indigo-500/10 flex items-center space-x-4">
+
+                                <!-- Icon Circle -->
+                                <div class="w-14 h-14 bg-[#14171c] group-hover:bg-indigo-950/40 rounded-xl flex items-center justify-center text-2xl border border-[#2d3748] group-hover:border-indigo-500/30 transition-all">
+                                    {{ link.icon }}
+                                </div>
+
+                                <!-- Link Info -->
+                                <div class="flex-grow min-w-0 pr-6">
+                                    <h3 class="text-base font-bold text-white group-hover:text-indigo-400 transition-all truncate">
+                                        {{ link.name }}
+                                    </h3>
+                                    <p class="text-xs text-gray-400 truncate mt-0.5 font-mono">
+                                        {{ link.url }}
+                                    </p>
+                                    <span class="inline-flex items-center text-[10px] text-indigo-400 font-semibold uppercase tracking-wider mt-2 group-hover:translate-x-1 transition-transform">
+                                        Open Fullscreen &rarr;
+                                    </span>
+                                </div>
+
+                                <!-- Delete Button -->
+                                <button onclick="event.stopPropagation(); if(confirm('Delete {{ link.name }}?')) { window.location.href='/delete/{{ loop.index0 }}'; }"
+                                        class="absolute top-3 right-3 text-gray-500 hover:text-rose-500 bg-[#14171c]/80 hover:bg-rose-950/20 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all border border-transparent hover:border-rose-500/20"
+                                        title="Delete Link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else: %}
+                    <div class="flex-grow flex flex-col items-center justify-center text-center p-8 border border-dashed border-[#2d3748] rounded-xl bg-[#14171c]">
+                        <span class="text-5xl mb-4">💤</span>
+                        <h3 class="text-md font-semibold text-white">No links added yet</h3>
+                        <p class="text-sm text-gray-400 mt-1 max-w-xs">Use the form on the left to add your first Tesla fullscreen link.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-[#1f2937] bg-[#14171c] py-4 text-center text-xs text-gray-500">
+        <p>Tip: Bookmark this dashboard page inside your Tesla browser for quick single-click access to all your fullscreen links.</p>
+    </footer>
+
+    <!-- Launch JS script -->
+    <script>
+        function launchUrl(targetUrl) {
+            // Guarantee full scheme
+            if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+                targetUrl = 'http://' + targetUrl;
+            }
+            // Generate YouTube redirect exploit
+            const redirectUrl = 'https://www.youtube.com/redirect?q=' + encodeURIComponent(targetUrl);
+            window.open(redirectUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
