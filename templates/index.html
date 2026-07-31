@@ -6,28 +6,107 @@
     <title>Tesla Fullscreen Link Manager</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        accent: {
+                            DEFAULT: 'var(--accent-color)',
+                            hover: 'var(--accent-hover-color)',
+                            light: 'var(--accent-light-color)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        :root {
+            --color-bg-primary: #0f1115;
+            --color-bg-secondary: #14171c;
+            --color-bg-tertiary: #1c2026;
+            --color-bg-hover: #222830;
+            --color-text-primary: #e2e8f0;
+            --color-text-secondary: #94a3b8;
+            --color-text-title: #ffffff;
+            --color-border: #1f2937;
+            --color-border-card: #2d3748;
+            
+            /* Accent color variables (Indigo by default) */
+            --accent-color: #4f46e5;
+            --accent-hover-color: #4338ca;
+            --accent-light-color: #e0e7ff;
+        }
+
+        html.dark {
+            --color-bg-primary: #0f1115;
+            --color-bg-secondary: #14171c;
+            --color-bg-tertiary: #1c2026;
+            --color-bg-hover: #222830;
+            --color-text-primary: #e2e8f0;
+            --color-text-secondary: #94a3b8;
+            --color-text-title: #ffffff;
+            --color-border: #1f2937;
+            --color-border-card: #2d3748;
+        }
+
+        html.light {
+            --color-bg-primary: #f3f4f6;       /* gray-100 */
+            --color-bg-secondary: #ffffff;     /* white */
+            --color-bg-tertiary: #f9fafb;      /* gray-50 */
+            --color-bg-hover: #f3f4f6;         /* gray-100 */
+            --color-text-primary: #374151;     /* gray-700 */
+            --color-text-secondary: #6b7280;   /* gray-500 */
+            --color-text-title: #111827;       /* gray-900 */
+            --color-border: #e5e7eb;           /* gray-200 */
+            --color-border-card: #d1d5db;      /* gray-300 */
         }
     </style>
 </head>
-<body class="bg-[#0f1115] text-[#e2e8f0] min-h-screen flex flex-col">
+<body class="bg-[#0f1115] dark:bg-[#0f1115] text-[#e2e8f0] min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="border-b border-[#1f2937] bg-[#14171c] py-5 px-6 shadow-md">
-        <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <header class="border-b border-custom-primary bg-custom-secondary py-5 px-6 shadow-md transition-all">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-3">
                 <span class="text-3xl">🚗</span>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight text-white">Tesla Fullscreen Dashboard</h1>
-                    <p class="text-xs text-gray-400">Launch any webpage in fullscreen using the YouTube redirect exploit</p>
+                    <h1 class="text-xl font-bold tracking-tight text-custom-title">Tesla Fullscreen Dashboard</h1>
+                    <p class="text-xs text-custom-secondary">Launch any webpage in fullscreen using the YouTube redirect exploit</p>
                 </div>
             </div>
-            <div class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center space-x-1.5 font-medium">
-                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
-                <span>Ready for Tesla Browser</span>
+            
+            <div class="flex items-center space-x-3">
+                <!-- Reorder Mode Button -->
+                <button id="reorderToggle" onclick="toggleReorderMode()" class="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl border border-custom-card bg-custom-tertiary text-xs font-semibold text-custom-primary hover:bg-custom-hover transition-all focus:outline-none" title="Toggle Reorder Mode">
+                    <span>↕️</span>
+                    <span id="reorderToggleText">Reorder</span>
+                </button>
+
+                <!-- Accent Selection -->
+                <div class="flex items-center space-x-1.5 bg-custom-tertiary p-2 rounded-xl border border-custom-card" title="Select Accent Color">
+                    <button onclick="setAccent('indigo')" class="w-4 h-4 rounded-full bg-[#4f46e5] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-indigo"></button>
+                    <button onclick="setAccent('emerald')" class="w-4 h-4 rounded-full bg-[#10b981] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-emerald"></button>
+                    <button onclick="setAccent('rose')" class="w-4 h-4 rounded-full bg-[#f43f5e] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-rose"></button>
+                    <button onclick="setAccent('amber')" class="w-4 h-4 rounded-full bg-[#f59e0b] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-amber"></button>
+                    <button onclick="setAccent('blue')" class="w-4 h-4 rounded-full bg-[#3b82f6] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-blue"></button>
+                    <button onclick="setAccent('violet')" class="w-4 h-4 rounded-full bg-[#8b5cf6] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-violet"></button>
+                </div>
+
+                <!-- Theme Toggle Button -->
+                <button id="themeToggle" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-custom-tertiary text-custom-primary hover:bg-custom-hover border border-custom-card transition-all focus:outline-none" title="Toggle Theme">
+                    <span id="themeToggleIcon" class="text-base leading-none block">🌙</span>
+                </button>
             </div>
         </div>
     </header>
@@ -37,74 +116,81 @@
 
         <!-- Left Side: Form to Add a Link -->
         <div class="lg:col-span-1">
-            <div class="bg-[#14171c] border border-[#1f2937] rounded-2xl p-6 shadow-xl sticky top-6">
-                <h2 class="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+            <div class="bg-custom-secondary border border-custom-primary rounded-2xl p-6 shadow-xl sticky top-6">
+                <h2 class="text-lg font-semibold text-custom-title mb-4 flex items-center space-x-2">
                     <span>➕</span>
                     <span>Add New Link</span>
                 </h2>
 
                 <form action="/add" method="POST" class="space-y-4">
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-300 mb-1.5">Link Name</label>
+                        <label for="name" class="block text-sm font-medium text-custom-secondary mb-1.5">Link Name</label>
                         <input type="text" id="name" name="name" required placeholder="e.g., Jellyfin, Home Assistant"
-                               class="w-full bg-[#1c2026] border border-[#2d3748] rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                               class="w-full bg-custom-tertiary border border-custom-card rounded-xl px-4 py-3 text-custom-title placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
                     </div>
 
                     <div>
-                        <label for="url" class="block text-sm font-medium text-gray-300 mb-1.5">Target URL</label>
+                        <label for="url" class="block text-sm font-medium text-custom-secondary mb-1.5">Target URL</label>
                         <input type="text" id="url" name="url" required placeholder="e.g., 192.168.1.100:8123"
-                               class="w-full bg-[#1c2026] border border-[#2d3748] rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
-                        <p class="text-xs text-gray-500 mt-1">IP or web domain. http:// is added automatically if omitted.</p>
+                               class="w-full bg-custom-tertiary border border-custom-card rounded-xl px-4 py-3 text-custom-title placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
+                        <p class="text-xs text-custom-secondary mt-1">IP or web domain. http:// is added automatically if omitted.</p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Select Icon</label>
-                        <div class="grid grid-cols-5 gap-2" id="iconSelector">
+                        <label class="block text-sm font-medium text-custom-secondary mb-2">Select Icon</label>
+                        <div class="grid grid-cols-5 gap-2">
                             <!-- Radio icons -->
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="🌐" checked class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🌐</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">🌐</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="📺" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">📺</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">📺</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="🏠" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🏠</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">🏠</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="🎮" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🎮</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">🎮</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="🎵" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🎵</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">🎵</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="💡" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">💡</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">💡</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="📽️" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">📽️</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">📽️</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="🧭" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🧭</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">🧭</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="icon" value="🚗" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">🚗</div>
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">🚗</div>
                             </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="icon" value="⚙️" class="peer sr-only">
-                                <div class="bg-[#1c2026] hover:bg-[#252b33] peer-checked:bg-indigo-600 peer-checked:text-white border border-[#2d3748] rounded-xl p-3 text-center text-xl transition-all">⚙️</div>
+                            <label class="cursor-pointer" id="primaryCustomIconRadioLabel">
+                                <input type="radio" name="icon" value="custom" class="peer sr-only">
+                                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all" title="Custom Icon">✏️</div>
                             </label>
+                        </div>
+
+                        <!-- Custom Icon Text Field -->
+                        <div id="customIconInputContainer" class="hidden mt-3">
+                            <label for="custom_icon" class="block text-xs font-medium text-custom-secondary mb-1">Enter Custom Emoji or Text</label>
+                            <input type="text" id="custom_icon" name="custom_icon" placeholder="e.g. 🍿 or YT"
+                                   class="w-full bg-custom-tertiary border border-custom-card rounded-xl px-4 py-2 text-custom-title text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-indigo-600/20">
+                    <button type="submit" class="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-3 px-4 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-accent/20">
                         Add Link
                     </button>
                 </form>
@@ -113,8 +199,8 @@
 
         <!-- Right Side: Links Grid -->
         <div class="lg:col-span-2">
-            <div class="bg-[#14171c] border border-[#1f2937] rounded-2xl p-6 shadow-xl h-full min-h-[400px] flex flex-col">
-                <h2 class="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+            <div class="bg-custom-secondary border border-custom-primary rounded-2xl p-6 shadow-xl h-full min-h-[400px] flex flex-col">
+                <h2 class="text-lg font-semibold text-custom-title mb-6 flex items-center space-x-2">
                     <span>📱</span>
                     <span>Tesla Fullscreen Launcher</span>
                 </h2>
@@ -123,55 +209,141 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-grow content-start">
                         {% for link in links %}
                             <div onclick="launchUrl('{{ link.url }}')"
-                                 class="group relative bg-[#1c2026] hover:bg-[#222830] border border-[#2d3748] hover:border-indigo-500/50 rounded-2xl p-5 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-indigo-500/10 flex items-center space-x-4">
+                                 class="group relative bg-custom-tertiary hover:bg-custom-hover border border-custom-card hover:border-accent/50 rounded-2xl p-5 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-accent/10 flex items-center space-x-4">
 
                                 <!-- Icon Circle -->
-                                <div class="w-14 h-14 bg-[#14171c] group-hover:bg-indigo-950/40 rounded-xl flex items-center justify-center text-2xl border border-[#2d3748] group-hover:border-indigo-500/30 transition-all">
+                                <div class="w-14 h-14 bg-custom-secondary group-hover:bg-accent/10 rounded-xl flex items-center justify-center text-2xl border border-custom-card group-hover:border-accent/30 transition-all flex-shrink-0">
                                     {{ link.icon }}
                                 </div>
 
                                 <!-- Link Info -->
                                 <div class="flex-grow min-w-0 pr-6">
-                                    <h3 class="text-base font-bold text-white group-hover:text-indigo-400 transition-all truncate">
+                                    <h3 class="text-base font-bold text-custom-title group-hover:text-accent transition-all truncate">
                                         {{ link.name }}
                                     </h3>
-                                    <p class="text-xs text-gray-400 truncate mt-0.5 font-mono">
+                                    <p class="text-xs text-custom-secondary truncate mt-0.5 font-mono">
                                         {{ link.url }}
                                     </p>
-                                    <span class="inline-flex items-center text-[10px] text-indigo-400 font-semibold uppercase tracking-wider mt-2 group-hover:translate-x-1 transition-transform">
+                                    <span class="inline-flex items-center text-[10px] text-accent font-semibold uppercase tracking-wider mt-2 group-hover:translate-x-1 transition-transform">
                                         Open Fullscreen &rarr;
                                     </span>
                                 </div>
 
-                                <!-- Delete Button -->
-                                <button onclick="event.stopPropagation(); if(confirm('Delete {{ link.name }}?')) { window.location.href='/delete/{{ loop.index0 }}'; }"
-                                        class="absolute top-3 right-3 text-gray-500 hover:text-rose-500 bg-[#14171c]/80 hover:bg-rose-950/20 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all border border-transparent hover:border-rose-500/20"
-                                        title="Delete Link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
+                                <!-- Action Buttons (Edit & Delete) -->
+                                <div class="absolute top-3 right-3 flex space-x-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
+                                    <!-- Edit Button -->
+                                    <button onclick="event.stopPropagation(); openEditModal({{ loop.index0 }}, '{{ link.name | escape }}', '{{ link.url | escape }}', '{{ link.icon | escape }}')"
+                                            class="text-gray-500 hover:text-accent bg-custom-secondary/80 hover:bg-accent/10 p-1.5 rounded-lg border border-transparent hover:border-accent/20 transition-all"
+                                            title="Edit Link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </button>
+
+                                    <!-- Delete Button -->
+                                    <button onclick="event.stopPropagation(); if(confirm('Delete {{ link.name | escape }}?')) { window.location.href='/delete/{{ loop.index0 }}'; }"
+                                            class="text-gray-500 hover:text-rose-500 bg-custom-secondary/80 hover:bg-rose-950/20 p-1.5 rounded-lg border border-transparent hover:border-rose-500/20 transition-all"
+                                            title="Delete Link">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Reorder Buttons -->
+                                <div class="reorder-btn hidden absolute bottom-3 right-3 flex space-x-1 z-10">
+                                    {% if not loop.first %}
+                                    <button onclick="event.stopPropagation(); window.location.href='/reorder/{{ loop.index0 }}/up';"
+                                            class="text-lg bg-custom-secondary hover:bg-accent hover:text-white p-1 rounded-lg border border-custom-card shadow-sm transition-all flex items-center justify-center leading-none"
+                                            title="Move Up">
+                                        ◀️
+                                    </button>
+                                    {% endif %}
+                                    {% if not loop.last %}
+                                    <button onclick="event.stopPropagation(); window.location.href='/reorder/{{ loop.index0 }}/down';"
+                                            class="text-lg bg-custom-secondary hover:bg-accent hover:text-white p-1 rounded-lg border border-custom-card shadow-sm transition-all flex items-center justify-center leading-none"
+                                            title="Move Down">
+                                        ▶️
+                                    </button>
+                                    {% endif %}
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else: %}
-                    <div class="flex-grow flex flex-col items-center justify-center text-center p-8 border border-dashed border-[#2d3748] rounded-xl bg-[#14171c]">
+                    <div class="flex-grow flex flex-col items-center justify-center text-center p-8 border border-dashed border-custom-card rounded-xl bg-custom-secondary">
                         <span class="text-5xl mb-4">💤</span>
-                        <h3 class="text-md font-semibold text-white">No links added yet</h3>
-                        <p class="text-sm text-gray-400 mt-1 max-w-xs">Use the form on the left to add your first Tesla fullscreen link.</p>
+                        <h3 class="text-md font-semibold text-custom-title">No links added yet</h3>
+                        <p class="text-sm text-custom-secondary mt-1 max-w-xs">Use the form on the left to add your first Tesla fullscreen link.</p>
                     </div>
                 {% endif %}
             </div>
         </div>
     </main>
 
+    <!-- Edit Link Modal -->
+    <div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-custom-secondary border border-custom-primary rounded-2xl p-6 shadow-2xl w-full max-w-md transform scale-95 transition-all duration-300" id="editModalContent">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-custom-title flex items-center space-x-2">
+                    <span>✏️</span>
+                    <span>Edit Link</span>
+                </h2>
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-rose-500 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="editForm" method="POST" class="space-y-4">
+                <div>
+                    <label for="edit_name" class="block text-sm font-medium text-custom-secondary mb-1.5">Link Name</label>
+                    <input type="text" id="edit_name" name="name" required placeholder="e.g., Jellyfin"
+                           class="w-full bg-custom-tertiary border border-custom-card rounded-xl px-4 py-3 text-custom-title focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
+                </div>
+
+                <div>
+                    <label for="edit_url" class="block text-sm font-medium text-custom-secondary mb-1.5">Target URL</label>
+                    <input type="text" id="edit_url" name="url" required placeholder="e.g., 192.168.1.100:8123"
+                           class="w-full bg-custom-tertiary border border-custom-card rounded-xl px-4 py-3 text-custom-title focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-custom-secondary mb-2">Select Icon</label>
+                    <div class="grid grid-cols-5 gap-2" id="editIconSelector">
+                        <!-- Standard icons for Edit form populated by JS -->
+                    </div>
+                    
+                    <div id="editCustomIconInputContainer" class="hidden mt-3">
+                        <label for="edit_custom_icon" class="block text-xs font-medium text-custom-secondary mb-1">Enter Custom Emoji or Text</label>
+                        <input type="text" id="edit_custom_icon" name="custom_icon" placeholder="e.g. 🍿 or YT"
+                               class="w-full bg-custom-tertiary border border-custom-card rounded-xl px-4 py-2 text-custom-title text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeEditModal()" class="w-1/2 bg-gray-500/10 hover:bg-gray-500/20 text-custom-secondary font-semibold py-3 px-4 rounded-xl transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit" class="w-1/2 bg-accent hover:bg-accent-hover text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-lg shadow-accent/20">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer -->
-    <footer class="border-t border-[#1f2937] bg-[#14171c] py-4 text-center text-xs text-gray-500">
+    <footer class="border-t border-custom-primary bg-custom-secondary py-4 text-center text-xs text-custom-secondary mt-auto transition-all">
         <p>Tip: Bookmark this dashboard page inside your Tesla browser for quick single-click access to all your fullscreen links.</p>
     </footer>
 
-    <!-- Launch JS script -->
+    <!-- Launch & Theme JS script -->
     <script>
+        const standardIcons = ['🌐', '📺', '🏠', '🎮', '🎵', '💡', '📽️', '🧭', '🚗', '⚙️'];
+
+        // Core Launch function
         function launchUrl(targetUrl) {
             // Guarantee full scheme
             if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
@@ -180,6 +352,200 @@
             // Generate YouTube redirect exploit
             const redirectUrl = 'https://www.youtube.com/redirect?q=' + encodeURIComponent(targetUrl);
             window.open(redirectUrl, '_blank');
+        }
+
+        // --- Theme management ---
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(currentTheme);
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme(currentTheme);
+        }
+
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            const themeToggleIcon = document.getElementById('themeToggleIcon');
+            
+            if (theme === 'light') {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                themeToggleIcon.textContent = '☀️';
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                themeToggleIcon.textContent = '🌙';
+            }
+            
+            // Reapply accent to update visual borders on accent buttons if needed
+            const currentAccent = localStorage.getItem('accent') || 'indigo';
+            setAccentColors(currentAccent);
+        }
+
+        // --- Accent management ---
+        const accents = {
+            indigo: { color: '#4f46e5', hover: '#4338ca', light: '#e0e7ff' },
+            emerald: { color: '#10b981', hover: '#059669', light: '#d1fae5' },
+            rose: { color: '#f43f5e', hover: '#e11d48', light: '#ffe4e6' },
+            amber: { color: '#f59e0b', hover: '#d97706', light: '#fef3c7' },
+            blue: { color: '#3b82f6', hover: '#2563eb', light: '#dbeafe' },
+            violet: { color: '#8b5cf6', hover: '#7c3aed', light: '#ede9fe' }
+        };
+
+        let currentAccent = localStorage.getItem('accent') || 'indigo';
+        setAccent(currentAccent);
+
+        function setAccent(accentName) {
+            if (!accents[accentName]) accentName = 'indigo';
+            localStorage.setItem('accent', accentName);
+            setAccentColors(accentName);
+        }
+
+        function setAccentColors(accentName) {
+            const values = accents[accentName];
+            const root = document.documentElement;
+            
+            root.style.setProperty('--accent-color', values.color);
+            root.style.setProperty('--accent-hover-color', values.hover);
+            root.style.setProperty('--accent-light-color', values.light);
+            
+            // Highlight selected swatch
+            Object.keys(accents).forEach(name => {
+                const button = document.getElementById(`accent-${name}`);
+                if (button) {
+                    if (name === accentName) {
+                        button.classList.add('ring-2', 'ring-offset-2', 'ring-offset-gray-900', 'ring-white');
+                        button.classList.remove('scale-100');
+                        button.classList.add('scale-110');
+                    } else {
+                        button.classList.remove('ring-2', 'ring-offset-2', 'ring-offset-gray-900', 'ring-white', 'scale-110');
+                        button.classList.add('scale-100');
+                    }
+                }
+            });
+        }
+
+        // --- Reorder Mode management ---
+        let reorderMode = localStorage.getItem('reorderMode') === 'true';
+        applyReorderMode();
+
+        function toggleReorderMode() {
+            reorderMode = !reorderMode;
+            localStorage.setItem('reorderMode', reorderMode);
+            applyReorderMode();
+        }
+
+        function applyReorderMode() {
+            const reorderButtons = document.querySelectorAll('.reorder-btn');
+            const toggleBtn = document.getElementById('reorderToggle');
+            const toggleText = document.getElementById('reorderToggleText');
+            
+            if (reorderMode) {
+                reorderButtons.forEach(btn => btn.classList.remove('hidden'));
+                toggleBtn.classList.add('border-accent', 'text-accent');
+                toggleText.textContent = 'Done Reordering';
+            } else {
+                reorderButtons.forEach(btn => btn.classList.add('hidden'));
+                toggleBtn.classList.remove('border-accent', 'text-accent');
+                toggleText.textContent = 'Reorder';
+            }
+        }
+
+        // --- Add Link Form Listeners ---
+        document.querySelectorAll('input[name="icon"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const container = document.getElementById('customIconInputContainer');
+                const input = document.getElementById('custom_icon');
+                if (e.target.value === 'custom') {
+                    container.classList.remove('hidden');
+                    input.required = true;
+                    input.focus();
+                } else {
+                    container.classList.add('hidden');
+                    input.required = false;
+                }
+            });
+        });
+
+        // --- Edit Modal management ---
+        function openEditModal(index, name, url, currentIcon) {
+            const form = document.getElementById('editForm');
+            form.action = '/edit/' + index;
+            
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_url').value = url;
+            
+            const editIconSelector = document.getElementById('editIconSelector');
+            editIconSelector.innerHTML = '';
+            
+            let isStandard = standardIcons.includes(currentIcon);
+            
+            // Generate standard icon radios
+            standardIcons.forEach(icon => {
+                const isChecked = icon === currentIcon;
+                const label = document.createElement('label');
+                label.className = 'cursor-pointer';
+                label.innerHTML = `
+                    <input type="radio" name="icon" value="${icon}" ${isChecked ? 'checked' : ''} class="peer sr-only" onchange="toggleEditCustomIconInput(false)">
+                    <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all">${icon}</div>
+                `;
+                editIconSelector.appendChild(label);
+            });
+            
+            // Add custom icon radio
+            const customLabel = document.createElement('label');
+            customLabel.className = 'cursor-pointer';
+            customLabel.innerHTML = `
+                <input type="radio" name="icon" value="custom" ${!isStandard ? 'checked' : ''} class="peer sr-only" onchange="toggleEditCustomIconInput(true)">
+                <div class="bg-custom-tertiary hover:bg-custom-hover peer-checked:bg-accent peer-checked:text-white border border-custom-card rounded-xl p-3 text-center text-xl transition-all" title="Custom Icon">✏️</div>
+            `;
+            editIconSelector.appendChild(customLabel);
+            
+            const editCustomIconContainer = document.getElementById('editCustomIconInputContainer');
+            const editCustomIconInput = document.getElementById('edit_custom_icon');
+            
+            if (!isStandard) {
+                editCustomIconContainer.classList.remove('hidden');
+                editCustomIconInput.value = currentIcon;
+                editCustomIconInput.required = true;
+            } else {
+                editCustomIconContainer.classList.add('hidden');
+                editCustomIconInput.value = '';
+                editCustomIconInput.required = false;
+            }
+            
+            // Open modal
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                const content = document.getElementById('editModalContent');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeEditModal() {
+            const content = document.getElementById('editModalContent');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                const modal = document.getElementById('editModal');
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        function toggleEditCustomIconInput(show) {
+            const container = document.getElementById('editCustomIconInputContainer');
+            const input = document.getElementById('edit_custom_icon');
+            if (show) {
+                container.classList.remove('hidden');
+                input.required = true;
+                input.focus();
+            } else {
+                container.classList.add('hidden');
+                input.required = false;
+            }
         }
     </script>
 </body>
