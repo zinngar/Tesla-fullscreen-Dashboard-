@@ -35,6 +35,11 @@ def add_link():
     url = request.form.get("url", "").strip()
     icon = request.form.get("icon", "🌐").strip()
 
+    if icon == "custom":
+        icon = request.form.get("custom_icon", "🌐").strip()
+    if not icon:
+        icon = "🌐"
+
     if name and url:
         # Check if protocol is specified, if not default to http://
         if not url.startswith("http://") and not url.startswith("https://"):
@@ -51,11 +56,47 @@ def add_link():
         save_links(links)
     return redirect(url_for("index"))
 
+@app.route("/edit/<int:index>", methods=["POST"])
+def edit_link(index):
+    name = request.form.get("name", "").strip()
+    url = request.form.get("url", "").strip()
+    icon = request.form.get("icon", "🌐").strip()
+
+    if icon == "custom":
+        icon = request.form.get("custom_icon", "🌐").strip()
+    if not icon:
+        icon = "🌐"
+
+    if name and url:
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "http://" + url
+
+        links = load_links()
+        if 0 <= index < len(links):
+            links[index] = {
+                "name": name,
+                "url": url,
+                "icon": icon
+            }
+            save_links(links)
+    return redirect(url_for("index"))
+
 @app.route("/delete/<int:index>")
 def delete_link(index):
     links = load_links()
     if 0 <= index < len(links):
         links.pop(index)
+        save_links(links)
+    return redirect(url_for("index"))
+
+@app.route("/reorder/<int:index>/<direction>")
+def reorder_link(index, direction):
+    links = load_links()
+    if 0 <= index < len(links):
+        if direction == "up" and index > 0:
+            links[index], links[index - 1] = links[index - 1], links[index]
+        elif direction == "down" and index < len(links) - 1:
+            links[index], links[index + 1] = links[index + 1], links[index]
         save_links(links)
     return redirect(url_for("index"))
 
