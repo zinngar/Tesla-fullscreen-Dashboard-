@@ -13,9 +13,30 @@
                 extend: {
                     colors: {
                         accent: {
-                            DEFAULT: 'var(--accent-color)',
-                            hover: 'var(--accent-hover-color)',
-                            light: 'var(--accent-light-color)',
+                            DEFAULT: 'rgb(var(--accent-color-rgb, 79 70 229) / <alpha-value>)',
+                            hover: 'rgb(var(--accent-hover-color-rgb, 67 56 202) / <alpha-value>)',
+                            light: 'rgb(var(--accent-light-color-rgb, 224 231 255) / <alpha-value>)',
+                        }
+                    },
+                    backgroundColor: {
+                        custom: {
+                            primary: 'var(--color-bg-primary)',
+                            secondary: 'var(--color-bg-secondary)',
+                            tertiary: 'var(--color-bg-tertiary)',
+                            hover: 'var(--color-bg-hover)',
+                        }
+                    },
+                    textColor: {
+                        custom: {
+                            primary: 'var(--color-text-primary)',
+                            secondary: 'var(--color-text-secondary)',
+                            title: 'var(--color-text-title)',
+                        }
+                    },
+                    borderColor: {
+                        custom: {
+                            primary: 'var(--color-border)',
+                            card: 'var(--color-border-card)',
                         }
                     }
                 }
@@ -73,7 +94,7 @@
         }
     </style>
 </head>
-<body class="bg-[#0f1115] dark:bg-[#0f1115] text-[#e2e8f0] min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
     <!-- Header -->
     <header class="border-b border-custom-primary bg-custom-secondary py-5 px-6 shadow-md transition-all">
@@ -93,15 +114,11 @@
                     <span id="reorderToggleText">Reorder</span>
                 </button>
 
-                <!-- Accent Selection -->
-                <div class="flex items-center space-x-1.5 bg-custom-tertiary p-2 rounded-xl border border-custom-card" title="Select Accent Color">
-                    <button onclick="setAccent('indigo')" class="w-4 h-4 rounded-full bg-[#4f46e5] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-indigo"></button>
-                    <button onclick="setAccent('emerald')" class="w-4 h-4 rounded-full bg-[#10b981] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-emerald"></button>
-                    <button onclick="setAccent('rose')" class="w-4 h-4 rounded-full bg-[#f43f5e] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-rose"></button>
-                    <button onclick="setAccent('amber')" class="w-4 h-4 rounded-full bg-[#f59e0b] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-amber"></button>
-                    <button onclick="setAccent('blue')" class="w-4 h-4 rounded-full bg-[#3b82f6] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-blue"></button>
-                    <button onclick="setAccent('violet')" class="w-4 h-4 rounded-full bg-[#8b5cf6] border border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-violet"></button>
-                </div>
+                <!-- Customize Button -->
+                <button id="customizeToggle" onclick="toggleCustomizePanel()" class="flex items-center space-x-1.5 py-2 px-3.5 rounded-xl border border-custom-card bg-custom-tertiary text-xs font-semibold text-custom-primary hover:bg-custom-hover transition-all focus:outline-none" title="Toggle Customization Panel">
+                    <span>🎨</span>
+                    <span>Customize</span>
+                </button>
 
                 <!-- Theme Toggle Button -->
                 <button id="themeToggle" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-custom-tertiary text-custom-primary hover:bg-custom-hover border border-custom-card transition-all focus:outline-none" title="Toggle Theme">
@@ -110,6 +127,56 @@
             </div>
         </div>
     </header>
+
+    <!-- Collapsible Customization Panel -->
+    <div id="customizationPanel" class="max-h-0 overflow-hidden bg-custom-secondary border-b border-custom-primary transition-all duration-300 ease-in-out">
+        <div class="max-w-6xl mx-auto px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Accent Color Selection -->
+            <div>
+                <h3 class="text-sm font-semibold text-custom-title mb-3 flex items-center space-x-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-accent"></span>
+                    <span>Accent Color</span>
+                </h3>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="setAccent('indigo')" class="w-8 h-8 rounded-full bg-[#4f46e5] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-indigo" title="Indigo"></button>
+                    <button onclick="setAccent('emerald')" class="w-8 h-8 rounded-full bg-[#10b981] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-emerald" title="Emerald"></button>
+                    <button onclick="setAccent('rose')" class="w-8 h-8 rounded-full bg-[#f43f5e] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-rose" title="Rose"></button>
+                    <button onclick="setAccent('amber')" class="w-8 h-8 rounded-full bg-[#f59e0b] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-amber" title="Amber"></button>
+                    <button onclick="setAccent('blue')" class="w-8 h-8 rounded-full bg-[#3b82f6] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-blue" title="Blue"></button>
+                    <button onclick="setAccent('violet')" class="w-8 h-8 rounded-full bg-[#8b5cf6] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="accent-violet" title="Violet"></button>
+
+                    <!-- Custom Color Picker -->
+                    <div class="flex items-center space-x-2 pl-2 border-l border-custom-card">
+                        <span class="text-xs text-custom-secondary">Custom:</span>
+                        <input type="color" id="customAccentPicker" oninput="setCustomAccent(this.value)" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Font/Text Color Selection -->
+            <div>
+                <h3 class="text-sm font-semibold text-custom-title mb-3 flex items-center space-x-1.5">
+                    <span>🔤</span>
+                    <span>Font/Text Color</span>
+                </h3>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="setFontColor('default')" class="px-3 py-1.5 rounded-xl border border-custom-card bg-custom-tertiary text-xs font-semibold text-custom-primary hover:bg-custom-hover transition-all focus:outline-none" id="font-default">Default</button>
+                    <button onclick="setFontColor('#ffffff')" class="w-8 h-8 rounded-full bg-[#ffffff] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="font-white" title="White"></button>
+                    <button onclick="setFontColor('#cbd5e1')" class="w-8 h-8 rounded-full bg-[#cbd5e1] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="font-slate" title="Slate"></button>
+                    <button onclick="setFontColor('#fde047')" class="w-8 h-8 rounded-full bg-[#fde047] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="font-amber" title="Amber"></button>
+                    <button onclick="setFontColor('#fda4af')" class="w-8 h-8 rounded-full bg-[#fda4af] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="font-rose" title="Rose"></button>
+                    <button onclick="setFontColor('#6ee7b7')" class="w-8 h-8 rounded-full bg-[#6ee7b7] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="font-emerald" title="Emerald"></button>
+                    <button onclick="setFontColor('#93c5fd')" class="w-8 h-8 rounded-full bg-[#93c5fd] border-2 border-transparent hover:scale-110 transition-all focus:outline-none" id="font-blue" title="Blue"></button>
+
+                    <!-- Custom Color Picker -->
+                    <div class="flex items-center space-x-2 pl-2 border-l border-custom-card">
+                        <span class="text-xs text-custom-secondary">Custom:</span>
+                        <input type="color" id="customFontPicker" oninput="setCustomFontColor(this.value)" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="flex-grow max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -233,7 +300,7 @@
                                 <div class="absolute top-3 right-3 flex space-x-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
                                     <!-- Edit Button -->
                                     <button onclick="event.stopPropagation(); openEditModal({{ loop.index0 }}, '{{ link.name | escape }}', '{{ link.url | escape }}', '{{ link.icon | escape }}')"
-                                            class="text-gray-500 hover:text-accent bg-custom-secondary/80 hover:bg-accent/10 p-1.5 rounded-lg border border-transparent hover:border-accent/20 transition-all"
+                                            class="text-gray-500 hover:text-accent bg-custom-secondary hover:bg-accent/10 p-1.5 rounded-lg border border-transparent hover:border-accent/20 transition-all"
                                             title="Edit Link">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -242,7 +309,7 @@
 
                                     <!-- Delete Button -->
                                     <button onclick="event.stopPropagation(); if(confirm('Delete {{ link.name | escape }}?')) { window.location.href='/delete/{{ loop.index0 }}'; }"
-                                            class="text-gray-500 hover:text-rose-500 bg-custom-secondary/80 hover:bg-rose-950/20 p-1.5 rounded-lg border border-transparent hover:border-rose-500/20 transition-all"
+                                            class="text-gray-500 hover:text-rose-500 bg-custom-secondary hover:bg-rose-950/20 p-1.5 rounded-lg border border-transparent hover:border-rose-500/20 transition-all"
                                             title="Delete Link">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -354,11 +421,22 @@
             window.open(redirectUrl, '_blank');
         }
 
-        // --- Theme management ---
-        let currentTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(currentTheme);
+        // --- Collapsible Customization Panel ---
+        function toggleCustomizePanel() {
+            const panel = document.getElementById('customizationPanel');
+            const btn = document.getElementById('customizeToggle');
+            if (panel.style.maxHeight && panel.style.maxHeight !== '0px') {
+                panel.style.maxHeight = '0px';
+                btn.classList.remove('border-accent', 'text-accent');
+            } else {
+                panel.style.maxHeight = '500px';
+                btn.classList.add('border-accent', 'text-accent');
+            }
+        }
 
+        // --- Theme management ---
         function toggleTheme() {
+            let currentTheme = localStorage.getItem('theme') || 'dark';
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
             localStorage.setItem('theme', currentTheme);
             applyTheme(currentTheme);
@@ -378,9 +456,12 @@
                 themeToggleIcon.textContent = '🌙';
             }
             
-            // Reapply accent to update visual borders on accent buttons if needed
+            // Reapply accent and font colors to update visual borders/highlights
             const currentAccent = localStorage.getItem('accent') || 'indigo';
             setAccentColors(currentAccent);
+
+            const currentFontColor = localStorage.getItem('fontColor') || 'default';
+            applyFontColor(currentFontColor);
         }
 
         // --- Accent management ---
@@ -393,24 +474,50 @@
             violet: { color: '#8b5cf6', hover: '#7c3aed', light: '#ede9fe' }
         };
 
-        let currentAccent = localStorage.getItem('accent') || 'indigo';
-        setAccent(currentAccent);
-
         function setAccent(accentName) {
-            if (!accents[accentName]) accentName = 'indigo';
             localStorage.setItem('accent', accentName);
             setAccentColors(accentName);
         }
 
+        function setCustomAccent(colorHex) {
+            setAccent(colorHex);
+        }
+
         function setAccentColors(accentName) {
-            const values = accents[accentName];
             const root = document.documentElement;
+            const customAccentPicker = document.getElementById('customAccentPicker');
+            let values;
+
+            if (accents[accentName]) {
+                values = accents[accentName];
+                if (customAccentPicker) {
+                    customAccentPicker.value = values.color;
+                }
+            } else {
+                // Custom Hex color
+                const mainColor = accentName;
+                const hoverColor = adjustColor(mainColor, -0.15);
+                const lightColor = adjustColor(mainColor, 0.8);
+                values = { color: mainColor, hover: hoverColor, light: lightColor };
+                if (customAccentPicker) {
+                    customAccentPicker.value = mainColor;
+                }
+            }
             
             root.style.setProperty('--accent-color', values.color);
             root.style.setProperty('--accent-hover-color', values.hover);
             root.style.setProperty('--accent-light-color', values.light);
             
-            // Highlight selected swatch
+            // Convert to RGB space for Tailwind v3 custom alpha-value modifier support!
+            const mainRgb = hexToRgb(values.color);
+            const hoverRgb = hexToRgb(values.hover);
+            const lightRgb = hexToRgb(values.light);
+
+            root.style.setProperty('--accent-color-rgb', mainRgb);
+            root.style.setProperty('--accent-hover-color-rgb', hoverRgb);
+            root.style.setProperty('--accent-light-color-rgb', lightRgb);
+
+            // Highlight selected preset swatch if matched
             Object.keys(accents).forEach(name => {
                 const button = document.getElementById(`accent-${name}`);
                 if (button) {
@@ -426,7 +533,124 @@
             });
         }
 
-        // --- Reorder Mode management ---
+        function hexToRgb(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return `${r} ${g} ${b}`;
+        }
+
+        function adjustColor(hex, percent) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            let r = parseInt(hex.substring(0, 2), 16);
+            let g = parseInt(hex.substring(2, 4), 16);
+            let b = parseInt(hex.substring(4, 6), 16);
+
+            r = Math.max(0, Math.min(255, Math.floor(r * (1 + percent))));
+            g = Math.max(0, Math.min(255, Math.floor(g * (1 + percent))));
+            b = Math.max(0, Math.min(255, Math.floor(b * (1 + percent))));
+
+            const rStr = r.toString(16).padStart(2, '0');
+            const gStr = g.toString(16).padStart(2, '0');
+            const bStr = b.toString(16).padStart(2, '0');
+            return `#${rStr}${gStr}${bStr}`;
+        }
+
+        // --- Font/Text Color management ---
+        function applyFontColor(color) {
+            const root = document.documentElement;
+            const customFontPicker = document.getElementById('customFontPicker');
+
+            // Highlight selected button
+            const presetButtons = {
+                '#ffffff': 'font-white',
+                '#cbd5e1': 'font-slate',
+                '#fde047': 'font-amber',
+                '#fda4af': 'font-rose',
+                '#6ee7b7': 'font-emerald',
+                '#93c5fd': 'font-blue',
+                'default': 'font-default'
+            };
+
+            // Remove active styles from all buttons
+            Object.values(presetButtons).forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    if (id === 'font-default') {
+                        btn.classList.remove('border-accent', 'text-accent');
+                    } else {
+                        btn.classList.remove('ring-2', 'ring-offset-2', 'ring-offset-gray-900', 'ring-white', 'scale-110');
+                        btn.classList.add('scale-100');
+                    }
+                }
+            });
+
+            if (color === 'default') {
+                root.style.removeProperty('--color-text-primary');
+                root.style.removeProperty('--color-text-title');
+                root.style.removeProperty('--color-text-secondary');
+
+                const defaultBtn = document.getElementById('font-default');
+                if (defaultBtn) defaultBtn.classList.add('border-accent', 'text-accent');
+                if (customFontPicker) customFontPicker.value = '#374151'; // standard gray
+            } else {
+                root.style.setProperty('--color-text-primary', color);
+                root.style.setProperty('--color-text-title', color);
+
+                // Get dynamic secondary color using 70% opacity rgba
+                const rgb = parseHexToRgbString(color);
+                root.style.setProperty('--color-text-secondary', `rgba(${rgb}, 0.7)`);
+
+                const activeId = presetButtons[color.toLowerCase()];
+                if (activeId) {
+                    const btn = document.getElementById(activeId);
+                    if (btn) {
+                        btn.classList.add('ring-2', 'ring-offset-2', 'ring-offset-gray-900', 'ring-white', 'scale-110');
+                        btn.classList.remove('scale-100');
+                    }
+                }
+                if (customFontPicker) customFontPicker.value = color;
+            }
+        }
+
+        function setFontColor(color) {
+            localStorage.setItem('fontColor', color);
+            applyFontColor(color);
+        }
+
+        function setCustomFontColor(color) {
+            setFontColor(color);
+        }
+
+        function parseHexToRgbString(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return `${r}, ${g}, ${b}`;
+        }
+
+        // --- Initialize State (safely ordered below all function/const definitions) ---
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(currentTheme);
+
+        let currentAccent = localStorage.getItem('accent') || 'indigo';
+        setAccent(currentAccent);
+
+        let currentFontColor = localStorage.getItem('fontColor') || 'default';
+        applyFontColor(currentFontColor);
+
+                // --- Reorder Mode management ---
         let reorderMode = localStorage.getItem('reorderMode') === 'true';
         applyReorderMode();
 
