@@ -17,7 +17,7 @@ x-casaos:
 services:
   teslafullscreen:
     image: zinngar/tesla-fullscreen-dashboard:latest
-    container_name: teslafullscreen_app
+    pull_policy: always
     ports:
       - "5050:5000"
     volumes:
