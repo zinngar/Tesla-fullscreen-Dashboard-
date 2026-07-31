@@ -56,6 +56,43 @@ class TeslaFullscreenTestCase(unittest.TestCase):
         self.assertIn(b'Secure Link', response.data)
         self.assertIn(b'https://google.com', response.data)
 
+    def test_add_custom_icon(self):
+        # When custom icon is selected
+        response = self.app.post('/add', data={
+            'name': 'Custom Icon Link',
+            'url': 'https://example.com',
+            'icon': 'custom',
+            'custom_icon': '🍿'
+        }, follow_redirects=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Custom Icon Link', response.data)
+        self.assertIn('🍿'.encode('utf-8'), response.data)
+
+    def test_edit_link(self):
+        # Add two links
+        self.app.post('/add', data={'name': 'Alpha', 'url': 'http://alpha.com', 'icon': '🌐'})
+        self.app.post('/add', data={'name': 'Beta', 'url': 'http://beta.com', 'icon': '📺'})
+
+        # Edit the first link
+        response = self.app.post('/edit/0', data={
+            'name': 'Omega',
+            'url': 'http://omega.com',
+            'icon': '🏠'
+        }, follow_redirects=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Omega', response.data)
+        self.assertIn(b'http://omega.com', response.data)
+        self.assertNotIn(b'Alpha', response.data)
+
+        # Ensure order/position is maintained
+        with open(DATA_FILE, 'r') as f:
+            links = json.load(f)
+        self.assertEqual(len(links), 2)
+        self.assertEqual(links[0]['name'], 'Omega')
+        self.assertEqual(links[1]['name'], 'Beta')
+
     def test_delete_link(self):
         self.app.post('/add', data={
             'name': 'Delete Me',
@@ -69,6 +106,32 @@ class TeslaFullscreenTestCase(unittest.TestCase):
         response = self.app.get('/delete/0', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(b'Delete Me', response.data)
+
+    def test_reorder_link(self):
+        # Add three links
+        self.app.post('/add', data={'name': 'A', 'url': 'http://a.com', 'icon': '🌐'})
+        self.app.post('/add', data={'name': 'B', 'url': 'http://b.com', 'icon': '📺'})
+        self.app.post('/add', data={'name': 'C', 'url': 'http://c.com', 'icon': '🏠'})
+
+        # Reorder B down (which swaps B and C)
+        response = self.app.get('/reorder/1/down', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+        with open(DATA_FILE, 'r') as f:
+            links = json.load(f)
+        self.assertEqual(links[0]['name'], 'A')
+        self.assertEqual(links[1]['name'], 'C')
+        self.assertEqual(links[2]['name'], 'B')
+
+        # Reorder C up (which swaps A and C)
+        response = self.app.get('/reorder/1/up', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+        with open(DATA_FILE, 'r') as f:
+            links = json.load(f)
+        self.assertEqual(links[0]['name'], 'C')
+        self.assertEqual(links[1]['name'], 'A')
+        self.assertEqual(links[2]['name'], 'B')
 
 if __name__ == '__main__':
     unittest.main()
