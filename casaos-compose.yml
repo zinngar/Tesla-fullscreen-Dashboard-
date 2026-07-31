@@ -16,10 +16,10 @@ x-casaos:
 
 services:
   teslafullscreen:
-    image: ghcr.io/zinngar/tesla-fullscreen-dashboard:latest
+    image: zinngar/tesla-fullscreen-dashboard:latest
     container_name: teslafullscreen_app
     ports:
-      - "5000:5000"
+      - "5050:5000"
     volumes:
       - /DATA/AppData/teslafullscreen/data:/app/data
     restart: unless-stopped
