@@ -2,31 +2,41 @@ import unittest
 import json
 import os
 import shutil
-from app import app, DATA_FILE, DATA_DIR
+from app import app, DATA_FILE, BACKUP_FILE, DATA_DIR, DEFAULT_LINKS, save_links, load_links
 
 class TeslaFullscreenTestCase(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
         self.app.testing = True
 
-        # Backup existing links.json if any
-        self.backup_path = DATA_FILE + ".bak"
+        # Backup existing files if any
+        self.temp_backup_data = DATA_FILE + ".unittest_bak"
+        self.temp_backup_bak = BACKUP_FILE + ".unittest_bak"
+
         if os.path.exists(DATA_FILE):
-            shutil.copyfile(DATA_FILE, self.backup_path)
+            shutil.copyfile(DATA_FILE, self.temp_backup_data)
+        if os.path.exists(BACKUP_FILE):
+            shutil.copyfile(BACKUP_FILE, self.temp_backup_bak)
 
         # Write clean test state
         os.makedirs(DATA_DIR, exist_ok=True)
         with open(DATA_FILE, "w") as f:
             json.dump([], f)
+        if os.path.exists(BACKUP_FILE):
+            os.remove(BACKUP_FILE)
 
     def tearDown(self):
-        # Restore backup if any
-        if os.path.exists(self.backup_path):
-            if os.path.exists(DATA_FILE):
-                os.remove(DATA_FILE)
-            shutil.move(self.backup_path, DATA_FILE)
-        elif os.path.exists(DATA_FILE):
+        # Clean up files
+        if os.path.exists(DATA_FILE):
             os.remove(DATA_FILE)
+        if os.path.exists(BACKUP_FILE):
+            os.remove(BACKUP_FILE)
+
+        # Restore original files
+        if os.path.exists(self.temp_backup_data):
+            shutil.move(self.temp_backup_data, DATA_FILE)
+        if os.path.exists(self.temp_backup_bak):
+            shutil.move(self.temp_backup_bak, BACKUP_FILE)
 
     def test_dashboard_empty(self):
         response = self.app.get('/')
@@ -44,6 +54,13 @@ class TeslaFullscreenTestCase(unittest.TestCase):
         self.assertIn(b'Test Jellyfin', response.data)
         self.assertIn(b'http://192.168.1.50:8096', response.data)
         self.assertIn('📺'.encode('utf-8'), response.data)
+
+        # Check backup file was created and contains the link
+        self.assertTrue(os.path.exists(BACKUP_FILE))
+        with open(BACKUP_FILE, "r") as f:
+            bak_data = json.load(f)
+        self.assertEqual(len(bak_data), 1)
+        self.assertEqual(bak_data[0]['name'], 'Test Jellyfin')
 
     def test_add_link_with_existing_protocol(self):
         response = self.app.post('/add', data={
@@ -132,6 +149,40 @@ class TeslaFullscreenTestCase(unittest.TestCase):
         self.assertEqual(links[0]['name'], 'C')
         self.assertEqual(links[1]['name'], 'A')
         self.assertEqual(links[2]['name'], 'B')
+
+    def test_backup_restore_on_corrupt_data_file(self):
+        # Save a valid list first
+        valid_links = [{'name': 'Persisted Link', 'url': 'http://example.com', 'icon': '⭐'}]
+        save_links(valid_links)
+
+        # Corrupt the main data file
+        with open(DATA_FILE, 'w') as f:
+            f.write("corrupted json string {")
+
+        # Loading links should recover from backup file
+        loaded = load_links()
+        self.assertEqual(len(loaded), 1)
+        self.assertEqual(loaded[0]['name'], 'Persisted Link')
+
+        # DATA_FILE should have been restored
+        with open(DATA_FILE, 'r') as f:
+            restored_data = json.load(f)
+        self.assertEqual(restored_data[0]['name'], 'Persisted Link')
+
+    def test_fallback_to_defaults_when_both_files_missing_or_corrupted(self):
+        # Delete both files
+        if os.path.exists(DATA_FILE):
+            os.remove(DATA_FILE)
+        if os.path.exists(BACKUP_FILE):
+            os.remove(BACKUP_FILE)
+
+        loaded = load_links()
+        self.assertEqual(len(loaded), len(DEFAULT_LINKS))
+        self.assertEqual(loaded[0]['name'], DEFAULT_LINKS[0]['name'])
+
+        # Both files should be re-created with DEFAULT_LINKS
+        self.assertTrue(os.path.exists(DATA_FILE))
+        self.assertTrue(os.path.exists(BACKUP_FILE))
 
 if __name__ == '__main__':
     unittest.main()
