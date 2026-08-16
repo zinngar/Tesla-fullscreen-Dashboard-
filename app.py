@@ -6,23 +6,66 @@ app = Flask(__name__)
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 DATA_FILE = os.path.join(DATA_DIR, "links.json")
+BACKUP_FILE = os.path.join(DATA_DIR, "links.json.bak")
+TMP_FILE = os.path.join(DATA_DIR, "links.json.tmp")
 
-def load_links():
-    if not os.path.exists(DATA_FILE):
-        os.makedirs(DATA_DIR, exist_ok=True)
-        with open(DATA_FILE, "w") as f:
-            json.dump([], f)
-        return []
-    try:
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    except Exception:
-        return []
+DEFAULT_LINKS = [
+    {
+        "name": "Jellyfin",
+        "url": "http://192.168.1.100:8096",
+        "icon": "📺"
+    },
+    {
+        "name": "Home Assistant",
+        "url": "http://192.168.1.100:8123",
+        "icon": "🏠"
+    },
+    {
+        "name": "Plex",
+        "url": "http://192.168.1.200:32400",
+        "icon": "💡"
+    }
+]
 
 def save_links(links):
     os.makedirs(DATA_DIR, exist_ok=True)
-    with open(DATA_FILE, "w") as f:
-        json.dump(links, f, indent=2)
+    # Write to temporary file first for atomic save
+    with open(TMP_FILE, "w", encoding="utf-8") as f:
+        json.dump(links, f, indent=2, ensure_ascii=False)
+    os.replace(TMP_FILE, DATA_FILE)
+    # Maintain backup copy
+    try:
+        with open(BACKUP_FILE, "w", encoding="utf-8") as f:
+            json.dump(links, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass
+
+def load_links():
+    os.makedirs(DATA_DIR, exist_ok=True)
+    # 1. Try loading main data file
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    return data
+        except Exception:
+            pass
+
+    # 2. Try restoring from backup file
+    if os.path.exists(BACKUP_FILE):
+        try:
+            with open(BACKUP_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    save_links(data)
+                    return data
+        except Exception:
+            pass
+
+    # 3. Fallback to default links if missing or corrupted
+    save_links(DEFAULT_LINKS)
+    return DEFAULT_LINKS
 
 @app.route("/")
 def index():
