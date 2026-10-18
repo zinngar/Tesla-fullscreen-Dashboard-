@@ -9,3 +9,4 @@ __pycache__/
 *.pyd
 .pytest_cache/
 flask_server.log
+data/

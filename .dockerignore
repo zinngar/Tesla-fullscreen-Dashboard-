@@ -1,0 +1,9 @@
+.git
+.github
+.vscode
+.idea
+data/
+__pycache__/
+*.pyc
+.pytest_cache/
+test_app.py
