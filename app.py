@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+DATA_DIR = os.environ.get("DATA_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "data"))
 DATA_FILE = os.path.join(DATA_DIR, "links.json")
 BACKUP_FILE = os.path.join(DATA_DIR, "links.json.bak")
 TMP_FILE = os.path.join(DATA_DIR, "links.json.tmp")
@@ -32,6 +32,8 @@ def save_links(links):
     # Write to temporary file first for atomic save
     with open(TMP_FILE, "w", encoding="utf-8") as f:
         json.dump(links, f, indent=2, ensure_ascii=False)
+        f.flush()
+        os.fsync(f.fileno())
     os.replace(TMP_FILE, DATA_FILE)
     # Maintain backup copy
     try:
@@ -66,6 +68,12 @@ def load_links():
     # 3. Fallback to default links if missing or corrupted
     save_links(DEFAULT_LINKS)
     return DEFAULT_LINKS
+
+@app.after_request
+def no_cache(response):
+    # Stop browsers (the Tesla one included) showing a stale list after a change
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 @app.route("/")
 def index():
@@ -144,4 +152,8 @@ def reorder_link(index, direction):
     return redirect(url_for("index"))
 
 if __name__ == "__main__":
+    print(f"Saving links to {DATA_FILE}", flush=True)
+    if os.path.exists("/.dockerenv") and not os.path.ismount(DATA_DIR):
+        print(f"WARNING: {DATA_DIR} is not a mounted volume. Links will be lost "
+              "when this container is recreated or updated.", flush=True)
     app.run(host="0.0.0.0", port=5000)
